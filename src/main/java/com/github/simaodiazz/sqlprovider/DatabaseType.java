@@ -9,7 +9,7 @@ public enum DatabaseType {
 
     MARIADB("MariaDB"),
     MYSQL("MySQL"),
-    POSTGRESQL("PostgreSQL"),
+    POSTGRESQL("PostgresSQL"),
     SQLITE("SQLite");
 
     private final String name;

@@ -13,7 +13,7 @@ public class MySQL implements Database {
 
     public MySQL(String user, String password, String host, String database) throws SQLException, ClassNotFoundException {
         Class.forName("org.mysql.jdbc.Driver");
-        connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + database, user, password);
+        connection = DriverManager.getConnection(String.format("jdbc:mysql://%s/%s", host, database), user, password);
     }
 
     @Override

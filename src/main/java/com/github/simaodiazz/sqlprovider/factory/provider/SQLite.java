@@ -17,12 +17,12 @@ public class SQLite implements Database {
     public SQLite(@NotNull File file) throws IOException, SQLException, ClassNotFoundException {
         if (!file.exists()) file.createNewFile();
         Class.forName("org.sqlite.JDBC");
-        connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
+        connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s", file.getAbsolutePath()));
     }
 
     @Override
     public DatabaseType getType() {
-        return DatabaseType.POSTGRESQL;
+        return DatabaseType.SQLITE;
     }
 
     @Override
