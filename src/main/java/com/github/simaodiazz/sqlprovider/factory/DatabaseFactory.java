@@ -23,47 +23,45 @@ public class DatabaseFactory {
 
     private Database databaseProvider;
     private DatabaseType databaseType;
-
-    public DatabaseFactory(DatabaseType databaseType) {
-        this.databaseType = databaseType;
-    }
-
-    @Contract(value = "_ -> new", pure = true)
-    public static @NotNull DatabaseFactory of(DatabaseType databaseType) {
-        return new DatabaseFactory(databaseType);
-    }
-
     private String user;
     private String password;
     private String host;
     private String database;
     private File file;
-
     private String errorMessage;
+
+    public DatabaseFactory(@NotNull DatabaseType databaseType) {
+        this.databaseType = databaseType;
+    }
+
+    @Contract(value = "_ -> new", pure = true)
+    public static @NotNull DatabaseFactory of(@NotNull DatabaseType databaseType) {
+        return new DatabaseFactory(databaseType);
+    }
 
     public void connect() throws DatabaseConnectException {
         try {
             switch (databaseType) {
                 case MARIADB:
-                    databaseProvider = new MariaDB(getUser(), getPassword(), getHost(), getDatabase());
+                    databaseProvider = new MariaDB(user, password, host, database);
                 case MYSQL:
-                    databaseProvider = new MySQL(getUser(), getPassword(), getHost(), getDatabase());
+                    databaseProvider = new MySQL(user, password, host, database);
                 case POSTGRESQL:
-                    databaseProvider = new PostgresSQL(getUser(), getPassword(), getHost(), getDatabase());
+                    databaseProvider = new PostgresSQL(user, password, host, database);
                 case SQLITE:
                     databaseProvider = new SQLite(file);
             }
         } catch (SQLException | ClassNotFoundException | IOException ignored) {
             throw new DatabaseConnectException(
               errorMessage == null
-                ? "Not possible connect " + databaseType.getName()
+                ? databaseType.getName()
                 : errorMessage
             );
         }
     }
 
     @SneakyThrows
-    public SimpleStatement prepareStatement(String query) {
+    public SimpleStatement prepareStatement(@NotNull String query) {
         return SimpleStatement.of(databaseProvider.getConnection().prepareStatement(query));
     }
 

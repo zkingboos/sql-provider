@@ -2,6 +2,7 @@ package com.github.simaodiazz.sqlprovider.factory.provider;
 
 import com.github.simaodiazz.sqlprovider.Database;
 import com.github.simaodiazz.sqlprovider.DatabaseType;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +12,7 @@ public class PostgresSQL implements Database {
 
     private final Connection connection;
 
-    public PostgresSQL(String user, String password, String host, String database) throws ClassNotFoundException, SQLException {
+    public PostgresSQL(@NotNull String user, @NotNull String password, @NotNull String host, @NotNull String database) throws ClassNotFoundException, SQLException {
         Class.forName("org.postgresql.jdbc.Driver");
         connection = DriverManager.getConnection(String.format("jdbc:postgresql://%s/%s", host, database), user, password);
     }

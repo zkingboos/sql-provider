@@ -15,12 +15,12 @@ public class SimpleStatement implements AutoCloseable {
     private final PreparedStatement preparedStatement;
 
     @Contract("_ -> new")
-    public static @NotNull SimpleStatement of(PreparedStatement preparedStatement) {
+    public static @NotNull SimpleStatement of(@NotNull PreparedStatement preparedStatement) {
         return new SimpleStatement(preparedStatement);
     }
 
     @SneakyThrows
-    public void set(int parameterIndex, Object value) {
+    public void set(int parameterIndex, @NotNull Object value) {
         try {
             preparedStatement.setObject(parameterIndex, value);
         } catch (SQLException exception) {
