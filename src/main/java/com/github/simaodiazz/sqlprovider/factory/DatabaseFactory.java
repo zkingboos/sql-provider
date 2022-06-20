@@ -2,6 +2,9 @@ package com.github.simaodiazz.sqlprovider.factory;
 
 import com.github.simaodiazz.sqlprovider.Database;
 import com.github.simaodiazz.sqlprovider.DatabaseType;
+import com.github.simaodiazz.sqlprovider.exceptions.DatabaseConnectException;
+import com.github.simaodiazz.sqlprovider.exceptions.DatabaseDisconnectException;
+import com.github.simaodiazz.sqlprovider.executor.SimpleStatement;
 import com.github.simaodiazz.sqlprovider.factory.provider.MariaDB;
 import com.github.simaodiazz.sqlprovider.factory.provider.MySQL;
 import com.github.simaodiazz.sqlprovider.factory.provider.PostgreSQL;
@@ -13,7 +16,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 @Getter
 @Setter
@@ -42,28 +47,36 @@ public class DatabaseFactory {
     public String database;
     public File file;
 
-    public void connect() {
-        switch (databaseType) {
-            case MARIADB:
-                databaseProvider = new MariaDB(getUser(), getPassword(), getHost(), getDatabase());
-            case MYSQL:
-                databaseProvider = new MySQL(getUser(), getPassword(), getHost(), getDatabase());
-            case POSTGRESQL:
-                databaseProvider = new PostgreSQL(getUser(), getPassword(), getHost(), getDatabase());
-            case SQLITE:
-                databaseProvider = new SQLite(file);
+    public String errorMessage;
+
+    public void connect() throws DatabaseConnectException {
+        try {
+            switch (databaseType) {
+                case MARIADB:
+                    databaseProvider = new MariaDB(getUser(), getPassword(), getHost(), getDatabase());
+                case MYSQL:
+                    databaseProvider = new MySQL(getUser(), getPassword(), getHost(), getDatabase());
+                case POSTGRESQL:
+                    databaseProvider = new PostgreSQL(getUser(), getPassword(), getHost(), getDatabase());
+                case SQLITE:
+                    databaseProvider = new SQLite(file);
+            }
+        } catch (SQLException | ClassNotFoundException | IOException e) {
+            throw new DatabaseConnectException(errorMessage == null ? "Not possible connect "+databaseType.getName() : errorMessage);
         }
     }
 
     @SneakyThrows
-    public void execute(String arg01) {
-        try (PreparedStatement ps = databaseProvider.getConnection().prepareStatement(arg01)) {
-            ps.executeUpdate();
-        }
+    public SimpleStatement prepareStatement(String arg01) {
+        return SimpleStatement.of(databaseProvider.getConnection().prepareStatement(arg01));
     }
 
     @SneakyThrows
     public void disconnect() {
-        databaseProvider.getConnection().close();
+        try {
+            databaseProvider.getConnection().close();
+        } catch (SQLException e) {
+            throw new DatabaseDisconnectException(e.getMessage());
+        }
     }
 }

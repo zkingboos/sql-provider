@@ -1,11 +1,13 @@
 package com.github.simaodiazz.sqlprovider.executor;
 
+import com.github.simaodiazz.sqlprovider.exceptions.DatabaseExecuteException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @AllArgsConstructor
 public class SimpleResultSet implements AutoCloseable {
@@ -19,20 +21,31 @@ public class SimpleResultSet implements AutoCloseable {
 
     @SneakyThrows
     public Object get(String column) {
-        if (resultSet.isBeforeFirst()) {
-            throw new UnsupportedOperationException("ResultSet hasn't any result, use next() to search first result!");
+        try {
+            if (resultSet.isBeforeFirst()) {
+                throw new DatabaseExecuteException("ResultSet hasn't any result, use next() to search first result!");
+            }
+            return resultSet.getObject(column);
+        } catch (SQLException e) {
+            throw new DatabaseExecuteException(e.getMessage());
         }
-        return resultSet.getObject(column);
     }
 
     @SneakyThrows
     public boolean next() {
-        return this.resultSet.next();
+        try {
+            return this.resultSet.next();
+        } catch (SQLException e) {
+            throw new DatabaseExecuteException(e.getMessage());
+        }
     }
 
-    @Override
     @SneakyThrows
     public void close() {
-        resultSet.close();
+        try {
+            resultSet.close();
+        } catch (SQLException e) {
+            throw new DatabaseExecuteException(e.getMessage());
+        }
     }
 }
