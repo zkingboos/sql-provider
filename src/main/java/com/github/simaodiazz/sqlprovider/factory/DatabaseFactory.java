@@ -26,16 +26,9 @@ public class DatabaseFactory {
 
     public Database databaseProvider;
     public DatabaseType databaseType;
-
-    public DatabaseFactory() { }
-
+    
     public DatabaseFactory(DatabaseType databaseType) {
         this.databaseType = databaseType;
-    }
-
-    @Contract(value = " -> new", pure = true)
-    public static @NotNull DatabaseFactory of() {
-        return new DatabaseFactory();
     }
 
     @Contract(value = "_ -> new", pure = true)
