@@ -15,19 +15,19 @@ public class SimpleResultSet implements AutoCloseable {
     private final ResultSet resultSet;
 
     @Contract("_ -> new")
-    public static @NotNull SimpleResultSet of(ResultSet resultSet) {
+    public static @NotNull SimpleResultSet of(@NotNull ResultSet resultSet) {
         return new SimpleResultSet(resultSet);
     }
 
     @SneakyThrows
-    public Object get(String column) {
+    public Object get(@NotNull String column) {
         try {
             if (resultSet.isBeforeFirst()) {
                 throw new DatabaseExecuteException("ResultSet hasn't any result, use next() to search first result!");
             }
             return resultSet.getObject(column);
-        } catch (SQLException e) {
-            throw new DatabaseExecuteException(e.getMessage());
+        } catch (SQLException exception) {
+            throw new DatabaseExecuteException(exception.getMessage());
         }
     }
 
@@ -35,8 +35,8 @@ public class SimpleResultSet implements AutoCloseable {
     public boolean next() {
         try {
             return this.resultSet.next();
-        } catch (SQLException e) {
-            throw new DatabaseExecuteException(e.getMessage());
+        } catch (SQLException exception) {
+            throw new DatabaseExecuteException(exception.getMessage());
         }
     }
 
@@ -44,8 +44,8 @@ public class SimpleResultSet implements AutoCloseable {
     public void close() {
         try {
             resultSet.close();
-        } catch (SQLException e) {
-            throw new DatabaseExecuteException(e.getMessage());
+        } catch (SQLException exception) {
+            throw new DatabaseExecuteException(exception.getMessage());
         }
     }
 }

@@ -15,16 +15,16 @@ public class SimpleStatement implements AutoCloseable {
     private final PreparedStatement preparedStatement;
 
     @Contract("_ -> new")
-    public static @NotNull SimpleStatement of(PreparedStatement preparedStatement) {
+    public static @NotNull SimpleStatement of(@NotNull PreparedStatement preparedStatement) {
         return new SimpleStatement(preparedStatement);
     }
 
     @SneakyThrows
-    public void set(int parameterIndex, Object value) {
+    public void set(int parameterIndex, @NotNull Object value) {
         try {
             preparedStatement.setObject(parameterIndex, value);
-        } catch (SQLException e) {
-            throw new DatabaseExecuteException(e.getMessage());
+        } catch (SQLException exception) {
+            throw new DatabaseExecuteException(exception.getMessage());
         }
     }
 
@@ -32,8 +32,8 @@ public class SimpleStatement implements AutoCloseable {
     public void executeUpdate() {
         try {
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new DatabaseExecuteException(e.getMessage());
+        } catch (SQLException exception) {
+            throw new DatabaseExecuteException(exception.getMessage());
         }
     }
 
@@ -41,8 +41,8 @@ public class SimpleStatement implements AutoCloseable {
     public SimpleResultSet executeQuery() {
         try {
             return new SimpleResultSet(preparedStatement.executeQuery());
-        } catch (SQLException e) {
-            throw new DatabaseExecuteException(e.getMessage());
+        } catch (SQLException exception) {
+            throw new DatabaseExecuteException(exception.getMessage());
         }
     }
 
@@ -50,8 +50,8 @@ public class SimpleStatement implements AutoCloseable {
     public void close() {
         try {
             preparedStatement.close();
-        } catch (SQLException e) {
-            throw new DatabaseExecuteException(e.getMessage());
+        } catch (SQLException exception) {
+            throw new DatabaseExecuteException(exception.getMessage());
         }
     }
 }
