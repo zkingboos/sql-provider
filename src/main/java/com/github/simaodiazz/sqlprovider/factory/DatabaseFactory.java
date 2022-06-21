@@ -30,8 +30,15 @@ public class DatabaseFactory {
     private File file;
     private String errorMessage;
 
+    public DatabaseFactory() { }
+    
     public DatabaseFactory(@NotNull DatabaseType databaseType) {
         this.databaseType = databaseType;
+    }
+    
+    @Contract(value = " -> new", pure = true)
+    public static @NotNull DatabaseFactory of() {
+        return new DatabaseFactory();
     }
 
     @Contract(value = "_ -> new", pure = true)
